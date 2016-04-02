@@ -10,6 +10,8 @@ use yii\filters\VerbFilter;
 
 class  BaseController extends Controller
 {
+    private $allow_action = array('login');
+
     public function behaviors()
     {
         return [
@@ -37,7 +39,8 @@ class  BaseController extends Controller
 
     public function beforeAction($action)
     {
-        if (\Yii::$app->user->isGuest) {
+        $action = Yii::$app->controller->action->id;
+        if (\Yii::$app->user->isGuest && !in_array($action,$this->allow_action)) {
             return $this->redirect('/site/login');
         }
     }
