@@ -9,8 +9,9 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use yii\db\Query;
+use app\controllers;
 
-class SiteController extends Controller
+class SiteController extends BaseController
 {
     public function behaviors()
     {
@@ -57,21 +58,19 @@ class SiteController extends Controller
         $child = $auth->createPermission($items['description']);
         $auth->addChild($parent, $child);*/
 
-        $auth = Yii::$app->authManager;
-
-
-        $parent = $auth->createRole('超级管理员');
-        $auth->assign($parent, '2');
+        /*$auth = Yii::$app->authManager;
+        $parent = $auth->getRole('超级管理员');
+        $children = $auth->getPermission('add');
+        $auth->addChild($parent, $children);
         exit;
-
         $permissions = Yii::$app->authManager->getChildren('超级管理员');
 
         var_dump($permissions);
-        exit;
+        exit;*/
 
-        $action = Yii::$app->controller->action->id;
+//        $action = Yii::$app->controller->action->id;
 
-        $can = Yii::$app->authManager->checkAccess( '1' , 'add' );
+        $can = Yii::$app->authManager->checkAccess( '2' , 'add' );
         var_dump($can);
         exit;
         print_r(\Yii::$app->user);
@@ -113,7 +112,6 @@ class SiteController extends Controller
         if (!\Yii::$app->user->isGuest) {
             return $this->goHome();
         }
-
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
