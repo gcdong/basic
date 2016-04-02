@@ -35,10 +35,55 @@ class SiteController extends Controller
         ];
     }
 
+
+
+
     public function actionTest(){
-        $query         = new Query();
-        $model  = $query->select('*')->from('link')->all();
-        print_r($model);
+       /* $item = 'add';
+        $auth = Yii::$app->authManager;
+        $createPost = $auth->createPermission($item);
+        $createPost->description = '创建了 ' . $item . ' 许可';
+        $auth->add($createPost);*/
+
+        /*$auth = Yii::$app->authManager;
+        $item = '超级管理员';
+        $role = $auth->createRole($item);
+        $role->description = '创建了 ' . $item . ' 角色';
+        $auth->add($role);*/
+
+        /*
+        $auth = Yii::$app->authManager;
+        $parent = $auth->createRole($items['name']);
+        $child = $auth->createPermission($items['description']);
+        $auth->addChild($parent, $child);*/
+
+        $auth = Yii::$app->authManager;
+
+
+        $parent = $auth->createRole('超级管理员');
+        $auth->assign($parent, '2');
+        exit;
+
+        $permissions = Yii::$app->authManager->getChildren('超级管理员');
+
+        var_dump($permissions);
+        exit;
+
+        $action = Yii::$app->controller->action->id;
+
+        $can = Yii::$app->authManager->checkAccess( '1' , 'add' );
+        var_dump($can);
+        exit;
+        print_r(\Yii::$app->user);
+        exit;
+        if(\Yii::$app->user->can($action)){
+            return true;
+        }else{
+            throw new \yii\web\UnauthorizedHttpException('对不起，您现在还没获此操作的权限');
+        }
+//        $auth = Yii::$app->authManager;
+//        $role = $auth->createRole('超级管理员');
+//        $auth->assign($role, 'add');
     }
 
     public function actions()
