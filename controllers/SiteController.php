@@ -9,7 +9,9 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use yii\db\Query;
-use app\controllers;
+use app\core\base\BaseController;
+use app\core\CMS;
+use app\models\User;
 
 class SiteController extends BaseController
 {
@@ -30,7 +32,7 @@ class SiteController extends BaseController
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'logout' => ['post'],
+                    'logout' => ['post','get'],
                 ],
             ],
         ];
@@ -113,18 +115,50 @@ class SiteController extends BaseController
             return $this->goHome();
         }
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+        if (Yii::$app->request->post()) {
+            $username = Yii::$app->request->post('username', '');
+            $password = Yii::$app->request->post('password', '');
+            $Model = new User();
+            $user = $Model::findOne(array('username'=>$username,'password'=>$password));
+            if (!empty($user)){
+                if(Yii::$app->getUser()->login($user)){
+                    exit($this->jsonSucceedResponse(['url'=>'/site/index']));
+                    CMS::go('');
+                }
+            }else{
+                exit('帐号或者密码错误');
+            }
         }
         return $this->render('login', [
             'model' => $model,
         ]);
     }
 
+    public function actionAdd(){
+        echo '进来了ADD';
+    }
+    public function actionDelete(){
+        echo '进来了delete';
+    }
+    public function actionCheck(){
+        if(Yii::$app->request->isAjax){
+            $username = Yii::$app->request->post('username', '');
+            $password = Yii::$app->request->post('password', '');
+            if (!empty($username) && !empty($password)) {
+                $Model = new User();
+                $user = $Model::findOne(array('username'=>$username,'password'=>$password));
+            }
+            if (!empty($user) && Yii::$app->getUser()->login($user)){
+                exit($this->jsonSucceedResponse(['url'=>'/site/index']));
+            }else{
+                exit($this->jsonFailedResponse([],'帐号或者密码错误'));
+            }
+        }
+    }
+
     public function actionLogout()
     {
         Yii::$app->user->logout();
-
         return $this->goHome();
     }
 
@@ -145,4 +179,5 @@ class SiteController extends BaseController
     {
         return $this->render('about');
     }
+
 }

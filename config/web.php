@@ -48,8 +48,6 @@ $config = [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => true,
-            'rules' => [
-            ],
         ],
         
     ],
